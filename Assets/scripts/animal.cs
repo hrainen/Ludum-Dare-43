@@ -10,24 +10,35 @@ public class animal : MonoBehaviour {
     public Transform sacrificeSpot;
     public bool canBePickedUp = true;
 
+    public float health = 100;
+
     // ========== PowerUp Info ============ //
     // TO DO: MAKE THIS SCRIPTABLE OBJECT   //
 
     public string powerUpName = "speed";
     public float powerUpValue = 1.5f;
 
+    // ============== particle effects ========== //
+    public GameObject bloodEffect;
+
     // Update is called once per frame
     void Update () {
 
 		if ( isBeingHeld )
         {
-            transform.position = new Vector3 ( playerHoldTarget.position.x, playerHoldTarget.position.y, -1);
+            transform.position = new Vector3 ( playerHoldTarget.position.x, playerHoldTarget.position.y, -3);
         }
 
         if ( isBeingSacrificed )
         {
             transform.position = new Vector3(sacrificeSpot.position.x, sacrificeSpot.position.y, -1.5f);
         }
+        
+        if ( health <= 0)
+        {
+            Invoke("die", .2f);
+        }
+
     }
 
     public void toggleAll()
@@ -65,4 +76,29 @@ public class animal : MonoBehaviour {
         canBePickedUp = true;
         toggleAll();
     }
+
+    public void OnTriggerEnter2D(Collider2D col)
+    {
+        if (col.CompareTag("Lethal"))
+        {
+            health = 0;
+        }
+    }
+
+    public void die()
+    {
+        // disable any movement
+
+        // spawn particle system
+        Instantiate( bloodEffect, transform.position, Quaternion.identity );
+
+        // destroy self
+        Destroy(gameObject);
+    }
+
+    public void takeDmg( float dmg )
+    {
+        health -= dmg;
+    }
+
 }

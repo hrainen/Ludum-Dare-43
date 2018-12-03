@@ -43,6 +43,12 @@ public class player : MonoBehaviour {
 
     public GameObject SceneMngr;
 
+    // ============= particle effects ===========//
+    public GameObject dustTrail;
+
+    // ============= UI ================//
+    public GameObject UIMngr;
+
 
     // Use this for initialization
     void Start () {
@@ -53,6 +59,18 @@ public class player : MonoBehaviour {
     {
         if ( health > 0 ) // if player is alive
         {
+            if ( !isGrounded || Input.GetAxisRaw("Horizontal") == 0 )
+            {
+                // were not on ground or were not moving
+                dustTrail.SetActive( false );
+            }
+
+            if ( isGrounded && Input.GetAxisRaw("Horizontal") != 0)
+            {
+                // were not on ground or were not moving
+                dustTrail.SetActive( true );
+            }
+
             // player jump
             if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
             {
@@ -90,6 +108,13 @@ public class player : MonoBehaviour {
             }
 
             // TO DO: DISPLAY WHAT ANIMAL PLAYER IS HOLDING
+        }
+
+        else
+        {
+            // stop displaying player
+
+            // activate blood particle system
         }
 
     }
@@ -172,7 +197,7 @@ public class player : MonoBehaviour {
 
     private void dropAnimal( GameObject animal )
     {
-        Debug.Log("Dropping Animal!");
+        //Debug.Log("Dropping Animal!");
 
         animal.GetComponent<animal>().drop();
 
@@ -182,6 +207,10 @@ public class player : MonoBehaviour {
 
         // reset timer for handling animal
         timeToHandle = handleDelay;
+
+        // stop displaying animal on UI
+        UIMngr.GetComponent<UI_Manager>().stopDisplayingAnimal();
+        
     }
 
     private void pickUpAnimal( GameObject animal )
@@ -192,6 +221,18 @@ public class player : MonoBehaviour {
             isHoldingAnimal = true;
             animalHolding = animal;
             animalToPickUp = null;
+
+            // display what animal were holding
+            if ( animal.GetComponent<animal>().powerUpName == "speed")
+            {
+                UIMngr.GetComponent<UI_Manager>().showBunny();
+            }
+
+            if (animal.GetComponent<animal>().powerUpName == "jump")
+            {
+                UIMngr.GetComponent<UI_Manager>().showSheep();
+            }
+
 
             // reset timer for handling animal
             timeToHandle = handleDelay;
@@ -205,7 +246,7 @@ public class player : MonoBehaviour {
 
     private void sacrifice( GameObject animal )
     {
-        Debug.Log("Sacrificing Animal! >:O ");
+        //Debug.Log("Sacrificing Animal! >:O ");
 
         // player is not holding animal anymore
         isHoldingAnimal = false;
@@ -214,6 +255,8 @@ public class player : MonoBehaviour {
         // reset timer for handling animal
         timeToHandle = handleDelay;
 
+        UIMngr.GetComponent<UI_Manager>().stopDisplayingAnimal(); // were not holding animal anymore
+        
         animal.GetComponent<animal>().sacrifice();
         Demon.GetComponent<demon>().animalToSacrifice = animal;
     }
