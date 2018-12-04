@@ -36,18 +36,22 @@ public class player : MonoBehaviour {
     private float speedPowerup = 1; // if > 1 will have effect
     private float jumpPowerup = 1; // if > 1 will have effect
 
-    private float speedLimit = 2;
-    private float jumpLimit = 2;
+    private float speedLimit = 5;
+    private float jumpLimit = 5;
 
     // ============= Exit ===================== // 
 
     public GameObject SceneMngr;
+    public string currentLevel;
 
     // ============= particle effects ===========//
     public GameObject dustTrail;
 
     // ============= UI ================//
     public GameObject UIMngr;
+
+    // ========= animations ===========//
+    public Animator animator;
 
 
     // Use this for initialization
@@ -57,8 +61,26 @@ public class player : MonoBehaviour {
 
     private void Update()
     {
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+
         if ( health > 0 ) // if player is alive
         {
+            // if player is moving
+            if ( Input.GetAxisRaw("Horizontal") != 0)
+            {
+                animator.SetBool("isMoving", true);
+            }
+
+            // if player is not moving and grounded
+            if ( Input.GetAxisRaw("Horizontal") == 0 && isGrounded)
+            {
+                animator.SetBool("isMoving", false);
+            }
+
             if ( !isGrounded || Input.GetAxisRaw("Horizontal") == 0 )
             {
                 // were not on ground or were not moving
@@ -169,13 +191,26 @@ public class player : MonoBehaviour {
 
         if (col.CompareTag("Exit"))
         {
-            SceneMngr.GetComponent<LevelSwitch>().readyToTransition();
+            SceneMngr.GetComponent<LevelSwitch>().readyToTransition( "Level1" );
+
+        }
+
+        if (col.CompareTag("BonusRoom"))
+        {
+            SceneMngr.GetComponent<LevelSwitch>().readyToTransition("BONUS ROOM");
+
+        }
+
+        if (col.CompareTag("EndGame"))
+        {
+            SceneMngr.GetComponent<LevelSwitch>().readyToTransition("GAME OVER");
 
         }
 
         if (col.CompareTag("Lethal"))
         {
             health = 0;
+            animator.SetBool("isMoving", false);
             Invoke( "die", 3 );
         }
     }
@@ -294,7 +329,7 @@ public class player : MonoBehaviour {
         // trigger death animation / sprite
 
         // after x seconds then tell scene manager to reload scene
-        SceneMngr.GetComponent<LevelSwitch>().resetScene();
+        SceneMngr.GetComponent<LevelSwitch>().resetScene( );
 
     }
 

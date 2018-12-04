@@ -7,7 +7,8 @@ public class LevelSwitch : MonoBehaviour {
 
     public bool levelFinished = false;
     public bool goToNextLevel = false;
-    private string nextLevel = "Level1";
+    private string nextLevel;
+    public string CurrentLevel;
 
 	// Update is called once per frame
 	void Update () {
@@ -17,14 +18,15 @@ public class LevelSwitch : MonoBehaviour {
         }
 	}
 
-    public void readyToTransition()
+    public void readyToTransition( string newLevel )
     {
+        nextLevel = newLevel;
         levelFinished = true;
         goToNextLevel = true;
     }
 
-    public void resetScene()
+    public void resetScene( )
     {
-        SceneManager.LoadScene("TutorialIsland");
+        SceneManager.LoadScene( CurrentLevel );
     }
 }

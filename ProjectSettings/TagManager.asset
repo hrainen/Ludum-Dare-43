@@ -8,6 +8,8 @@ TagManager:
   - Sacrifice
   - Exit
   - Lethal
+  - EndGame
+  - BonusRoom
   layers:
   - Default
   - TransparentFX
